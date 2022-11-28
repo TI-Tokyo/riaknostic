@@ -37,7 +37,7 @@ description() ->
 valid() ->
     riaknostic_node:can_connect().
 
--spec check() -> [{lager:log_level(), term()}].
+-spec check() -> [{logger:level(), term()}].
 check() ->
     Fun = fun() -> [{Pid,NumMon} || Pid <- processes(),
         [{monitors,Mon}] <- [process_info(Pid, [monitors])],

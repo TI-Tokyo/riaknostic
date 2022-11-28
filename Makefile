@@ -1,30 +1,31 @@
-.PHONY: rel stagedevrel deps test
+.PHONY: rel stagedevrel test
 
-all: deps compile
+REBAR ?= ./rebar3
+
+all: compile
 
 compile:
-	./rebar3 compile
-
-deps:
-	./rebar3 get-deps
+	$(REBAR) compile
 
 clean:
-	./rebar3 clean
+	$(REBAR) clean
 
-distclean: clean
-	./rebar3 delete-deps
+distclean:
+	$(REBAR) clean -a
 
-test:
-	./rebar3 compile eunit
+check:
+	$(REBAR) eunit
+	$(REBAR) dialyzer
+	$(REBAR) xref
 
 escriptize:
-	./rebar3 escriptize
+	$(REBAR) escriptize
 
 ##
 ## Doc targets
 ##
 docs:
-	./rebar3 doc skip_deps=true
+	$(REBAR) edoc
 
 pages: docs
 	cp priv/index.html doc/_index.html
@@ -41,45 +42,3 @@ pages: docs
 	git commit
 	git push origin gh-pages
 	git checkout master
-
-##
-## Release targets
-##
-VSN = `grep vsn src/riaknostic.app.src | cut -f 2 -d "\""`
-
-package: all docs
-	@mkdir -p pkg/riaknostic
-	@rm -rf pkg/riaknostic/*
-	@cat .manifest | xargs -n 1 -I % cp -R % pkg/riaknostic/.
-	@tar -czf pkg/riaknostic-$(VSN).tar.gz -C pkg riaknostic
-
-##
-## Dialyzer targets
-##
-APPS = kernel stdlib sasl erts ssl tools os_mon runtime_tools crypto inets \
-	xmerl webtool snmp public_key mnesia eunit syntax_tools compiler
-COMBO_PLT = $(HOME)/.riak_combo_dialyzer_plt
-
-check_plt: compile
-	dialyzer --check_plt --plt $(COMBO_PLT) --apps $(APPS)
-
-build_plt: compile
-	dialyzer --build_plt --output_plt $(COMBO_PLT) --apps $(APPS)
-
-dialyzer: compile
-	@echo
-	@echo Use "'make check_plt'" to check PLT prior to using this target.
-	@echo Use "'make build_plt'" to build PLT prior to using this target.
-	@echo
-	@sleep 1
-	dialyzer -Wno_return --plt $(COMBO_PLT) ebin deps/*/ebin | \
-	    fgrep -v -f ./dialyzer.ignore-warnings
-
-cleanplt:
-	@echo 
-	@echo "Are you sure?  It takes about 1/2 hour to re-build."
-	@echo Deleting $(COMBO_PLT) in 5 seconds.
-	@echo 
-	sleep 5
-	rm $(COMBO_PLT)
-

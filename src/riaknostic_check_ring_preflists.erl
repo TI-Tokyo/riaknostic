@@ -38,7 +38,7 @@ description() ->
 valid() ->
     riaknostic_node:can_connect().
 
--spec check() -> [{lager:log_level(), term()}].
+-spec check() -> [{logger:level(), term()}].
 check() ->
     case riaknostic_node:local_command(riak_core_ring_util, check_ring) of
         [] -> [];

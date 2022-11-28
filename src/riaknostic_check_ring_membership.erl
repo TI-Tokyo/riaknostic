@@ -43,7 +43,7 @@ description() ->
 valid() ->
     riaknostic_node:can_connect().
 
--spec check() -> [{lager:log_level(), term()}].
+-spec check() -> [{logger:level(), term()}].
 check() ->
     Stats = riaknostic_node:stats(),
     {ring_members, RingMembers} = lists:keyfind(ring_members, 1, Stats),

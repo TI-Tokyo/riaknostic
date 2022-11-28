@@ -48,14 +48,14 @@ do_read(Port, Acc) ->
         {Port, {data, StdOut}} ->
             riaknostic_util:log(debug, "Shell command output: ~n~s~n",[StdOut]),
             do_read(Port, Acc ++ StdOut);
-        {Port, {exit_status, _}} -> 
+        {Port, {exit_status, _}} ->
             %%port_close(Port),
             Acc;
-        Other -> 
+        Other ->
             io:format("~w", [Other]),
             do_read(Port, Acc)
     end.
- 
+
 %% @doc Converts a binary containing a text representation of a float
 %% into a float type.
 -spec binary_to_float(binary()) -> float().
@@ -69,7 +69,7 @@ log(Level, Format, Terms) ->
         false ->
             ok
     end,
-    lager:log(Level, self(), Format, Terms).
+    logger:log(Level, Format, Terms).
 
 log(Level, String) ->
     case should_log(Level) of
@@ -78,12 +78,11 @@ log(Level, String) ->
         false ->
             ok
     end,
-    lager:log(Level, self(), String).
+    logger:log(Level, String).
 
 should_log(Level) ->
     AppLevel = case application:get_env(riaknostic, log_level) of
         undefined -> info;
         {ok, L0} -> L0
     end,
-    lager_util:level_to_num(AppLevel) >= lager_util:level_to_num(Level).
-
+    logger:compare_levels(Level, AppLevel) /= lt.

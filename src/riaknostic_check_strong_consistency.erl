@@ -39,7 +39,7 @@ description() ->
 valid() ->
     riaknostic_node:can_connect().
 
--spec check() -> [{lager:log_level(), term()}].
+-spec check() -> [{logger:level(), term()}].
 check() ->
     StrongConsistencyOption = riaknostic_config:get_app_env([riak_core, enable_consensus]),
     {AAEOption, _ } = riaknostic_config:get_app_env([riak_kv, anti_entropy]),

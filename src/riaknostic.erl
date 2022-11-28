@@ -41,7 +41,7 @@
 %%   (set automatically by <code>riak-admin</code>)</td></tr>
 %% <tr><td><code>-d, --level level</code>&#160;&#160;</td><td>the severity of
 %%   messages you want to see, defaulting to 'notice'. Equivalent to
-%%   syslog/<code>lager</code> severity levels.</td></tr>
+%%   <code>logger</code> severity levels.</td></tr>
 %% <tr><td><code>-l, --list</code></td><td>lists available checks,
 %%   that is, modules that implement <code>riaknostic_check</code>. A
 %%   "short name" will be given for ease-of-use.</td></tr>
@@ -53,8 +53,6 @@
 %% @end
 -module(riaknostic).
 -export([main/1]).
-
--include_lib("lager/include/lager.hrl").
 
 -define(OPTS, [
                {etc,   undefined, "etc",   string,         undefined                                         },
@@ -108,21 +106,11 @@ run(InputChecks) ->
         [] ->
             io:format("No diagnostic messages to report.~n");
         _ ->
-            %% Print the most critical messages first
-            LogLevelNum = lists:foldl(
-              fun({mask, Mask}, Acc) ->
-                    Mask bor Acc;
-                (Level, Acc) when is_integer(Level) ->
-                    {mask, Mask} = lager_util:config_to_mask(lager_util:num_to_level(Level)),
-                    Mask bor Acc;
-                (_, Acc) ->
-                    Acc
-              end, 0, lager:get_loglevels(?DEFAULT_SINK)),
             FilteredMessages = lists:filter(fun({Level,_,_}) ->
-                                                    lager_util:level_to_num(Level) =< LogLevelNum
+                                                    logger:compare_levels(Level, debug) == gt
                                             end, Messages),
             SortedMessages = lists:sort(fun({ALevel, _, _}, {BLevel, _, _}) ->
-                                                lager_util:level_to_num(ALevel) =< lager_util:level_to_num(BLevel)
+                                                logger:compare_levels(ALevel, BLevel) == gt
                                         end, FilteredMessages),
             case SortedMessages of
                 [] ->

@@ -51,7 +51,7 @@ description() ->
 valid() ->
     true.
 
--spec check() -> [{lager:log_level(), term()}].
+-spec check() -> [{logger:level(), term()}].
 check() ->
     DataDirs = riaknostic_config:data_directories(),
     %% Add additional disk checks in the function below

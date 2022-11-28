@@ -153,7 +153,7 @@ try_connect() ->
             true;
         _ ->
             application:set_env(riaknostic, connect_failed, true),
-            lager:warning("Could not connect to the local Riak node ~p, some checks will not run.", [TargetNode]),
+            logger:warning("Could not connect to the local Riak node ~p, some checks will not run.", [TargetNode]),
             false
     end.
 

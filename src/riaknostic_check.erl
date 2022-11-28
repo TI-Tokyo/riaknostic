@@ -36,7 +36,7 @@
 %% riaknostic_node:can_connect/0. riaknostic_node:can_connect()}.</p>
 %%
 %% <h3>check/0</h3>
-%% <pre>-spec check() -> [{lager:log_level(), term()}].</pre>
+%% <pre>-spec check() -> [{logger:level(), term()}].</pre>
 %% <p>Runs the diagnostic, returning a list of pairs, where the first
 %% is a severity level and the second is any term that is understood
 %% by the <code>format/1</code> callback.</p>
@@ -56,12 +56,12 @@
 
 -callback description() -> string().
 -callback valid() -> boolean().
--callback check() -> [{lager:log_level(), term()}].
+-callback check() -> [{logger:log_level(), term()}].
 -callback format(term()) -> {io:format(), list(term())}.
 
 %% @doc Runs the diagnostic in the given module, if it is valid. Returns a
 %% list of messages that will be printed later using print/1.
--spec check(Module::module()) -> [{lager:log_level(), module(), term()}].
+-spec check(Module::module()) -> [{logger:level(), module(), term()}].
 check(Module) ->
     case Module:valid() of
         true ->
@@ -80,11 +80,11 @@ modules() ->
            {behaviour, [?MODULE]} =:= Attr orelse {behavior, [?MODULE]} =:= Attr ].
 
 
-%% @doc Formats and prints the given message via lager:log/3,4. The diagnostic
+%% @doc Formats and prints the given message via logger:log/3,4. The diagnostic
 %% module's format/1 function will be called to provide a
 %% human-readable message. It should return an iolist() or a 2-tuple
 %% consisting of a format string and a list of terms.
--spec print({Level::lager:log_level(), Module::module(), Data::term()}) -> ok.
+-spec print({Level::logger:level(), Module::module(), Data::term()}) -> ok.
 print({Level, Mod, Data}) ->
     case Mod:format(Data) of
         {Format, Terms} ->

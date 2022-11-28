@@ -41,7 +41,7 @@ description() ->
 valid() ->
     true.
 
--spec check() -> [{lager:log_level(), term()}].
+-spec check() -> [{logger:level(), term()}].
 check() ->
     CrashDumpConfig = riaknostic_config:get_vm_env("ERL_CRASH_DUMP"),
     {DumpDir, DumpFile} = case CrashDumpConfig of

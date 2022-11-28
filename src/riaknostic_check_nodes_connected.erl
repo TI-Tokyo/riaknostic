@@ -37,7 +37,7 @@ description() ->
 valid() ->
     riaknostic_node:can_connect().
 
--spec check() -> [{lager:log_level(), term()}].
+-spec check() -> [{logger:level(), term()}].
 check() ->
     Stats = riaknostic_node:stats(),
     {connected_nodes, ConnectedNodes} = lists:keyfind(connected_nodes, 1, Stats),

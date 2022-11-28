@@ -23,8 +23,7 @@
 %% @doc Provides convenient access to Riak configuration values.  When
 %% the {@link riaknostic. riaknostic} module calls {@link
 %% prepare/0. prepare/0}, Riak's <code>app.config</code> and
-%% <code>vm.args</code> files will be parsed and memoized, and lager
-%% will be started on the console at the configured severity level.
+%% <code>vm.args</code> files will be parsed and memoized.
 %% @end
 
 -module(riaknostic_config).
@@ -45,7 +44,7 @@
 %%      not need to invoke it.
 -spec prepare() -> ok | {error, iodata()}.
 prepare() ->
-    prepare([fun start_lager/0, fun load_app_config/0, fun load_vm_args/0]).
+    prepare([fun load_app_config/0, fun load_vm_args/0]).
 
 prepare([]) ->
     ok;
@@ -150,18 +149,6 @@ cookie() ->
             undefined;
         {ok, Cookie} ->
             list_to_atom(Cookie)
-    end.
-
-%% Private functions
-start_lager() ->
-    application:load(lager),
-    case application:get_env(riaknostic, log_level) of
-        undefined ->
-            {error, "Log level not set!"};
-        {ok, Level} ->
-            application:set_env(lager, crash_log, undefined),
-            application:set_env(lager, handlers, [{lager_console_backend, Level}]),
-            lager:start()
     end.
 
 load_app_config() ->

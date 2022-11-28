@@ -39,7 +39,7 @@ description() ->
 valid() ->
     riaknostic_node:can_connect().
 
--spec check() -> [{lager:log_level(), term()}].
+-spec check() -> [{logger:level(), term()}].
 check() ->
     Pid = riaknostic_node:pid(),
     Output = riaknostic_util:run_command("ps -o pmem,rss -p " ++ Pid),

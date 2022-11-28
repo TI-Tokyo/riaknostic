@@ -26,7 +26,6 @@
   {registered, []},
   {applications, [
                   kernel,
-                  stdlib,
-                  lager
+                  stdlib
                  ]}
  ]}.
